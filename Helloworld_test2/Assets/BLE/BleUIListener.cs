@@ -12,9 +12,7 @@ public class BleUIListener : MonoBehaviour
     private BleAdapter adapter;
     private bool isConnecting = false;
     private bool isConnected = false;
-
-    private bool suppressDebug = false;
-    private string logPath;
+    private bool suppressDebug = false;   // ← ADD THIS
 
 
     private const string NUS_SERVICE = "6e400001-b5a3-f393-e0a9-e50e24dcca9e";
@@ -26,16 +24,14 @@ public class BleUIListener : MonoBehaviour
 
     private void Log(string msg)
     {
-        if (!suppressDebug)
-        {
-            if (logText) logText.text = msg; // Only show BLE messages before connection
-        }
+        Debug.Log(msg);
 
-        // Always goes to Unity console only if debug is not suppressed
-        if (!suppressDebug)
-            Debug.Log(msg);
+        if (suppressDebug) 
+            return;
+
+        if (logText) 
+            logText.text = msg;
     }
-
 
 
     private static string NormalizeMac(string mac)
@@ -120,14 +116,6 @@ public class BleUIListener : MonoBehaviour
 
         Log("Connected: " + address);
 
-        string date = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss");
-        logPath = System.IO.Path.Combine(
-            Application.persistentDataPath,
-            $"IMU_Log_{date}.csv"
-        );
-        System.IO.File.WriteAllText(logPath, "timestamp,ax,ay,az,gx,gy,gz\n");
-
-
         StartCoroutine(SubscribeAfter(address));
     }
 
@@ -205,7 +193,7 @@ public class BleUIListener : MonoBehaviour
     {
         if (bytes == null || bytes.Length != 12)
         {
-            Debug.Log("Unexpected packet length: " + bytes?.Length);
+            Log("Unexpected packet length: " + bytes?.Length);
             return;
         }
 
@@ -224,24 +212,6 @@ public class BleUIListener : MonoBehaviour
         float gy = gy_i / 100f;
         float gz = gz_i / 100f;
 
-        //Clean Terminal Output
-        Debug.Log($"ax={ax:F3} ay={ay:F3} az={az:F3} | gx={gx:F2} gy={gy:F2} gz={gz:F2}");
-    
-        //Clean UI output
-        if (logText)
-        {
-            logText.text =
-                $"ax={ax:F3}  ay={ay:F3}  az={az:F3}\n" +
-                $"gx={gx:F2}  gy={gy:F2}  gz={gz:F2}";
-        }
-
-        //Save to file
-        if (!string.IsNullOrEmpty(logPath))
-        {
-            string time = DateTime.Now.ToString("HH:mm:ss.fff");
-            string line = $"{time},{ax},{ay},{az},{gx},{gy},{gz}\n";
-            System.IO.File.AppendAllText(logPath, line);
-        }
-    
+        Log($"ax={ax:F3} ay={ay:F3} az={az:F3} | gx={gx:F2} gy={gy:F2} gz={gz:F2}");
     }
 }

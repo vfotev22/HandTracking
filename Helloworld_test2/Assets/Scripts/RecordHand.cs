@@ -17,7 +17,7 @@ public class RecordBothHandsToCSV : MonoBehaviour
         fileName = "HandData_" + DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss") + ".csv";
 
         // Folder inside Assets
-        string folderPath = Path.Combine(Application.dataPath, "HandInfo");
+        string folderPath = Path.Combine(Application.persistentDataPath, "HandInfo");
         if (!Directory.Exists(folderPath))
             Directory.CreateDirectory(folderPath);
 
