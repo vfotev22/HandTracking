@@ -64,7 +64,7 @@
     },
     "com.meta.xr.sdk.interaction.ovr": {
       "version": "72.0.0",
-      "depth": 0,
+      "depth": 1,
       "source": "registry",
       "dependencies": {
         "com.meta.xr.sdk.core": "72.0.0",
