@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "32661976124",
+    "firebase_url": "https://bluetoothproject-d3d89-default-rtdb.firebaseio.com",
+    "project_id": "bluetoothproject-d3d89",
+    "storage_bucket": "bluetoothproject-d3d89.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:32661976124:android:bc054874cf5f2faf85ff39",
+        "android_client_info": {
+          "package_name": "com.PIDLAB.Bluetooth"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBJtdksR5i88r-lA8a3odXBA9E3AbbHjKY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
