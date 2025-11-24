@@ -4715,7 +4715,7 @@ MonoBehaviour:
   _cameraRigRef: {fileID: 1857549890}
   _processLateUpdates: 0
   _handedness: 1
-  _ovrHand: {fileID: 0}
+  _ovrHand: {fileID: 1458276484}
   _trackingToWorldTransformer: {fileID: 1857549889}
   _handSkeletonProvider: {fileID: 1497969057}
 --- !u!4 &505557430
@@ -10834,7 +10834,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5cc5c234723e3a54d8dd09b131117743, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _meshType: 1
+  _meshType: 5
 --- !u!114 &1458276482
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10866,7 +10866,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2609c54f376cffc4da1ab9401cc1a36f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _skeletonType: 1
+  _skeletonType: 5
   _updateRootPose: 0
   _updateRootScale: 1
   _enablePhysicsCapsules: 1
@@ -12687,6 +12687,7 @@ GameObject:
   - component: {fileID: 1652879858}
   - component: {fileID: 1652879856}
   - component: {fileID: 1652879857}
+  - component: {fileID: 1652879859}
   m_Layer: 0
   m_Name: RightHand
   m_TagString: Untagged
@@ -12742,6 +12743,19 @@ Transform:
   - {fileID: 505557430}
   m_Father: {fileID: 1497969056}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1652879859
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1652879855}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d82781d94bb29344bbcd2c750c810b33, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  handNode: 5
 --- !u!1 &1656834474
 GameObject:
   m_ObjectHideFlags: 0
@@ -13514,7 +13528,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5cc5c234723e3a54d8dd09b131117743, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _meshType: 0
+  _meshType: 4
 --- !u!114 &1762148467
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -13546,7 +13560,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2609c54f376cffc4da1ab9401cc1a36f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _skeletonType: 0
+  _skeletonType: 4
   _updateRootPose: 0
   _updateRootScale: 1
   _enablePhysicsCapsules: 1
@@ -13807,7 +13821,7 @@ MonoBehaviour:
   useRecommendedMSAALevel: 1
   _monoscopic: 0
   _sharpenType: 0
-  _enableDynamicResolution: 0
+  _enableDynamicResolution: 1
   minDynamicResolutionScale: 1
   maxDynamicResolutionScale: 1
   quest2MinDynamicResolutionScale: 1
@@ -15181,7 +15195,7 @@ MonoBehaviour:
   _cameraRigRef: {fileID: 1857549890}
   _processLateUpdates: 0
   _handedness: 0
-  _ovrHand: {fileID: 0}
+  _ovrHand: {fileID: 1762148469}
   _trackingToWorldTransformer: {fileID: 1857549889}
   _handSkeletonProvider: {fileID: 1497969057}
 --- !u!4 &2000491886
@@ -16038,6 +16052,7 @@ GameObject:
   - component: {fileID: 2121020085}
   - component: {fileID: 2121020083}
   - component: {fileID: 2121020084}
+  - component: {fileID: 2121020086}
   m_Layer: 0
   m_Name: LeftHand
   m_TagString: Untagged
@@ -16093,6 +16108,19 @@ Transform:
   - {fileID: 2000491886}
   m_Father: {fileID: 1497969056}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2121020086
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2121020082}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d82781d94bb29344bbcd2c750c810b33, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  handNode: 4
 --- !u!1 &2130457728
 GameObject:
   m_ObjectHideFlags: 0

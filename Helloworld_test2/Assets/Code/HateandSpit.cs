@@ -8,13 +8,14 @@ using System;
 
 public class HateandSpit : MonoBehaviour
 {
-    public XRNode handNode = XRNode.LeftHand;
-    
+    public XRNode handNode = XRNode.RightHand;
+
     private DatabaseReference dbRef;
     private string handName;
 
     private Vector3 lastPos;
     private Quaternion lastRot;
+    private bool hasLastPose = false;
 
     private float lastSendTime = 0f;
     private float sendInterval = 0.5f;
@@ -28,8 +29,26 @@ public class HateandSpit : MonoBehaviour
     public class HandFrame
     {
         public float time;
-        public float px, py, pz;
-        public float rx, ry, rz, rw;
+        public Vector3Serializable position;
+        public QuaternionSerializable rotation;
+    }
+
+    [Serializable]
+    public class FrameListWrapper
+    {
+        public HandFrame[] frames;
+    }
+
+    [Serializable]
+    public class Vector3Serializable { public float x, y, z; }
+    [Serializable]
+    public class QuaternionSerializable { public float x, y, z, w; }
+
+    [Serializable]
+    public class HandData
+    {
+        public Vector3Serializable position;
+        public QuaternionSerializable rotation;
     }
 
     void Start()
@@ -41,13 +60,13 @@ public class HateandSpit : MonoBehaviour
         {
             if (task.Result == DependencyStatus.Available)
             {
-                FirebaseApp app = FirebaseApp.DefaultInstance;
+                // Create a custom Firebase app with database URL
+                FirebaseApp app = FirebaseApp.Create(new AppOptions()
+                {
+                    DatabaseUrl = new Uri("https://bluetoothproject-d3d89-default-rtdb.firebaseio.com/")
+                });
 
-                app.Options.DatabaseUrl =
-                    new Uri("https://bluetoothproject-d3d89-default-rtdb.firebaseio.com/");
-
-                dbRef = FirebaseDatabase.DefaultInstance.RootReference;
-
+                dbRef = FirebaseDatabase.GetInstance(app).RootReference;
                 Debug.Log("Firebase initialized. Session: " + sessionID);
             }
             else
@@ -62,16 +81,25 @@ public class HateandSpit : MonoBehaviour
         if (dbRef == null) return;
 
         InputDevice device = InputDevices.GetDeviceAtXRNode(handNode);
+        if (!device.isValid) return;
 
         if (device.TryGetFeatureValue(CommonUsages.devicePosition, out Vector3 pos) &&
             device.TryGetFeatureValue(CommonUsages.deviceRotation, out Quaternion rot))
         {
+            // Store frame for final file
             allFrames.Add(new HandFrame
             {
                 time = Time.time,
-                px = pos.x, py = pos.y, pz = pos.z,
-                rx = rot.x, ry = rot.y, rz = rot.z, rw = rot.w
+                position = new Vector3Serializable { x = pos.x, y = pos.y, z = pos.z },
+                rotation = new QuaternionSerializable { x = rot.x, y = rot.y, z = rot.z, w = rot.w }
             });
+
+            if (!hasLastPose)
+            {
+                lastPos = pos;
+                lastRot = rot;
+                hasLastPose = true;
+            }
 
             float movedDist = Vector3.Distance(pos, lastPos);
             float rotChanged = Quaternion.Angle(rot, lastRot);
@@ -95,17 +123,24 @@ public class HateandSpit : MonoBehaviour
 
     void SendRealtime(Vector3 pos, Quaternion rot)
     {
-        var data = new
+        if (dbRef == null) return;
+
+        HandData data = new HandData
         {
-            position = new { x = pos.x, y = pos.y, z = pos.z },
-            rotation = new { x = rot.x, y = rot.y, z = rot.z, w = rot.w }
+            position = new Vector3Serializable { x = pos.x, y = pos.y, z = pos.z },
+            rotation = new QuaternionSerializable { x = rot.x, y = rot.y, z = rot.z, w = rot.w }
         };
 
         string json = JsonUtility.ToJson(data);
 
+        // Use Push() to append new frame instead of overwriting
         dbRef.Child("sessions").Child(sessionID)
             .Child(handName).Child("realtime")
-            .SetRawJsonValueAsync(json);
+            .Push().SetRawJsonValueAsync(json).ContinueWithOnMainThread(task =>
+            {
+                if (task.IsFaulted)
+                    Debug.LogError("Failed to send realtime frame: " + task.Exception);
+            });
     }
 
     void OnApplicationQuit()
@@ -113,22 +148,27 @@ public class HateandSpit : MonoBehaviour
         SendFinalFile();
     }
 
+    void OnDestroy()
+    {
+        // In case application quits unexpectedly in editor
+        SendFinalFile();
+    }
+
     void SendFinalFile()
     {
-        if (dbRef == null) return;
+        if (dbRef == null || allFrames.Count == 0) return;
 
-        string json = JsonUtility.ToJson(new FrameListWrapper { frames = allFrames.ToArray() });
+        FrameListWrapper wrapper = new FrameListWrapper { frames = allFrames.ToArray() };
+        string json = JsonUtility.ToJson(wrapper);
 
         dbRef.Child("sessions").Child(sessionID)
             .Child(handName + "_final_json")
-            .SetRawJsonValueAsync(json);
-
-        Debug.Log("Final file uploaded for " + handName);
-    }
-
-    [Serializable]
-    public class FrameListWrapper
-    {
-        public HandFrame[] frames;
+            .SetRawJsonValueAsync(json).ContinueWithOnMainThread(task =>
+            {
+                if (task.IsCompleted)
+                    Debug.Log("Final file uploaded for " + handName);
+                else
+                    Debug.LogError("Failed to upload final file: " + task.Exception);
+            });
     }
 }
